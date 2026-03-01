@@ -4,7 +4,7 @@ import numpy as np
 class Exercise:
     @staticmethod
     def get_student() -> str:
-        return "Киселев Эдуард Владиславович, ПМ-32"
+        return "Киселев Эдуард Владиславович, ПМ-33"
 
     @staticmethod
     def get_topic() -> str:
