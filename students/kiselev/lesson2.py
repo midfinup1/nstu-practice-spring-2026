@@ -14,7 +14,7 @@ class LinearRegression:
 
     def loss(self, x: np.ndarray, y: np.ndarray) -> float:
         predction = self.predict(x)
-        return  np.mean((y - predction) ** 2)
+        return np.mean((y - predction) ** 2)
 
     def metric(self, x: np.ndarray, y: np.ndarray) -> float:
         prediction = self.predict(x)
@@ -29,7 +29,7 @@ class LinearRegression:
 
     def grad(self, x, y) -> tuple[np.ndarray, np.ndarray]:
         prediction = self.predict(x)
-        bias_grad = -2 * np.mean(y- prediction)
+        bias_grad = -2 * np.mean(y - prediction)
         weight_grad = -2 * np.mean(x.T * (y - prediction), axis=1)
         return weight_grad, bias_grad
 
@@ -60,7 +60,7 @@ class LogisticRegression:
 
     def grad(self, x, y) -> tuple[np.ndarray, np.ndarray]:
         prediction = self.predict(x)
-        bias_grad = np.sum(y- prediction)
+        bias_grad = np.sum(y - prediction)
         weight_grad = np.sum(x.T * (y - prediction), axis=1)
         return weight_grad, bias_grad
 
@@ -83,21 +83,19 @@ class Exercise:
         return LogisticRegression(num_features, rng or np.random.default_rng())
 
     @staticmethod
-    def fit(
-        model: LinearRegression | LogisticRegression, x: np.ndarray, y: np.ndarray, lr: float, n_iter: int
-    ) -> None: 
+    def fit(model: LinearRegression | LogisticRegression, x: np.ndarray, y: np.ndarray, lr: float, n_iter: int) -> None:
         for iteration in range(n_iter):
             grad_weights, grad_bias = model.grad(x, y)
-            
+
             model.weights -= lr * grad_weights
             model.bias -= lr * grad_bias
-            
+
             # Опционально: логирование прогресса каждые 100 итераций
             if iteration % 100 == 0:
                 loss = model.loss(x, y)
                 metric = model.metric(x, y)
-                
+
                 # Определяем название метрики в зависимости от типа модели
                 metric_name = "R²" if isinstance(model, LinearRegression) else "Accuracy"
-                
+
                 print(f"Iteration {iteration}: loss = {loss:.4f}, {metric_name} = {metric:.4f}")
