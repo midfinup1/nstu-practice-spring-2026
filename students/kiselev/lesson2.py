@@ -84,18 +84,8 @@ class Exercise:
 
     @staticmethod
     def fit(model: LinearRegression | LogisticRegression, x: np.ndarray, y: np.ndarray, lr: float, n_iter: int) -> None:
-        for iteration in range(n_iter):
+        for _ in range(n_iter):
             grad_weights, grad_bias = model.grad(x, y)
 
             model.weights -= lr * grad_weights
             model.bias -= lr * grad_bias
-
-            # Опционально: логирование прогресса каждые 100 итераций
-            if iteration % 100 == 0:
-                loss = model.loss(x, y)
-                metric = model.metric(x, y)
-
-                # Определяем название метрики в зависимости от типа модели
-                metric_name = "R²" if isinstance(model, LinearRegression) else "Accuracy"
-
-                print(f"Iteration {iteration}: loss = {loss:.4f}, {metric_name} = {metric:.4f}")
