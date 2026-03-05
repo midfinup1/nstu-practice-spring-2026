@@ -37,9 +37,39 @@ def topic() -> str:
     return "Lesson 2"
 
 
-@allure.label("part", "create_linear_model")
+@allure.label("part", "Linear")
 @pytest.mark.parametrize(("num_features", "num_points"), [(1, 10), (5, 10), (10, 100)])
 def test_create_linear_model(assignment_finder: AssignmentFinder, num_features: int, num_points: int):
+    assignment = cast(Lesson2Assignment, assignment_finder())
+    model = assignment.create_linear_model(num_features, np.random.default_rng(42))
+
+    rng = np.random.default_rng(42)
+    weights = rng.random(num_features)
+    bias = np.array(0)
+
+    assert isinstance(model, Regression)
+    np.testing.assert_allclose(model.weights, weights)
+    np.testing.assert_allclose(model.bias, bias)
+
+
+@allure.label("part", "Linear")
+@pytest.mark.parametrize(("num_features", "num_points"), [(1, 10), (5, 10), (10, 100)])
+def test_linear_model_predict(assignment_finder: AssignmentFinder, num_features: int, num_points: int):
+    assignment = cast(Lesson2Assignment, assignment_finder())
+    model = assignment.create_linear_model(num_features, np.random.default_rng(42))
+
+    rng = np.random.default_rng(42)
+    weights = rng.random(num_features)
+    bias = np.array(0)
+    x = rng.random((num_points, num_features))
+
+    expected_pred = x @ weights + bias
+    np.testing.assert_allclose(model.predict(x), expected_pred)
+
+
+@allure.label("part", "Linear")
+@pytest.mark.parametrize(("num_features", "num_points"), [(1, 10), (5, 10), (10, 100)])
+def test_linear_model_loss(assignment_finder: AssignmentFinder, num_features: int, num_points: int):
     assignment = cast(Lesson2Assignment, assignment_finder())
     model = assignment.create_linear_model(num_features, np.random.default_rng(42))
 
@@ -49,19 +79,39 @@ def test_create_linear_model(assignment_finder: AssignmentFinder, num_features: 
     x = rng.random((num_points, num_features))
     y = rng.random(num_points)
 
-    assert isinstance(model, Regression)
-    np.testing.assert_allclose(model.weights, weights)
-    np.testing.assert_allclose(model.bias, bias)
-
-    expected_pred = x @ weights + bias
-    np.testing.assert_allclose(model.predict(x), expected_pred)
-
-    expected_loss = np.mean((y - expected_pred) ** 2)
+    expected_loss = np.mean((y - x @ weights + bias) ** 2)
     np.testing.assert_allclose(model.loss(x, y), expected_loss)
 
-    expected_metric = 1 - expected_loss / np.var(y)
+
+@allure.label("part", "Linear")
+@pytest.mark.parametrize(("num_features", "num_points"), [(1, 10), (5, 10), (10, 100)])
+def test_linear_model_metric(assignment_finder: AssignmentFinder, num_features: int, num_points: int):
+    assignment = cast(Lesson2Assignment, assignment_finder())
+    model = assignment.create_linear_model(num_features, np.random.default_rng(42))
+
+    rng = np.random.default_rng(42)
+    weights = rng.random(num_features)
+    bias = np.array(0)
+    x = rng.random((num_points, num_features))
+    y = rng.random(num_points)
+
+    expected_metric = 1 - np.mean((y - x @ weights + bias) ** 2) / np.var(y)
     np.testing.assert_allclose(model.metric(x, y), expected_metric)
 
+
+@allure.label("part", "Linear")
+@pytest.mark.parametrize(("num_features", "num_points"), [(1, 10), (5, 10), (10, 100)])
+def test_linear_model_grad(assignment_finder: AssignmentFinder, num_features: int, num_points: int):
+    assignment = cast(Lesson2Assignment, assignment_finder())
+    model = assignment.create_linear_model(num_features, np.random.default_rng(42))
+
+    rng = np.random.default_rng(42)
+    weights = rng.random(num_features)
+    bias = np.array(0)
+    x = rng.random((num_points, num_features))
+    y = rng.random(num_points)
+
+    expected_pred = x @ weights + bias
     expected_dw = -2 * x.T @ (y - expected_pred) / x.shape[0]
     expected_db = -2 * np.mean(y - expected_pred)
     dw, db = model.grad(x, y)
@@ -69,7 +119,7 @@ def test_create_linear_model(assignment_finder: AssignmentFinder, num_features: 
     np.testing.assert_allclose(expected_db, db)
 
 
-@allure.label("part", "fit_linear_model")
+@allure.label("part", "Linear")
 @pytest.mark.parametrize(("num_features", "num_points"), [(1, 10), (3, 10)])
 def test_fit_linear_model(assignment_finder: AssignmentFinder, num_features: int, num_points: int):
     assignment = cast(Lesson2Assignment, assignment_finder())
@@ -85,7 +135,7 @@ def test_fit_linear_model(assignment_finder: AssignmentFinder, num_features: int
     np.testing.assert_allclose(model.bias, sol[-1], 1e-2)
 
 
-@allure.label("part", "create_logistic_model")
+@allure.label("part", "Logistic")
 @pytest.mark.parametrize("num_features", [1, 10])
 def test_create_logistic_model(assignment_finder: AssignmentFinder, num_features: int):
     assignment = cast(Lesson2Assignment, assignment_finder())
