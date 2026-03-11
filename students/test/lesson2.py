@@ -36,7 +36,7 @@ class LogisticRegression:
     def loss(self, x: np.ndarray, y: np.ndarray) -> float:
         return 0
 
-    def metric(self, x: np.ndarray, y: np.ndarray) -> float:
+    def metric(self, x: np.ndarray, y: np.ndarray, type: str = "accuracy") -> float:
         return 0
 
     def grad(self, x, y) -> tuple[np.ndarray, np.ndarray]:
@@ -62,5 +62,15 @@ class Exercise:
 
     @staticmethod
     def fit(
-        model: LinearRegression | LogisticRegression, x: np.ndarray, y: np.ndarray, lr: float, n_iter: int
+        model: LinearRegression | LogisticRegression,
+        x: np.ndarray,
+        y: np.ndarray,
+        lr: float,
+        n_epoch: int,
+        batch_size: int | None = None,
     ) -> None: ...
+
+    @staticmethod
+    def get_iris_hyperparameters() -> dict[str, int | float]:
+        # Для 25 эпох, по метрике AUROC
+        return {"lr": 0.42, "batch_size": 42}
