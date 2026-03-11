@@ -47,21 +47,18 @@ class LogisticRegression:
         return 1 / (1 + np.exp(-z))
 
     def loss(self, x: np.ndarray, y: np.ndarray) -> float:
-        prediction = self.predict(x)
         eps = 1e-15
-        prediction = np.clip(prediction, eps, 1 - eps)
-        return np.sum(-(y * np.log(prediction) + (1 - y) * np.log(1 - prediction)))
+        prediction = np.clip(self.predict(x), eps, 1 - eps)
+        return np.mean(-(y * np.log(prediction) + (1 - y) * np.log(1 - prediction)))
 
     def metric(self, x: np.ndarray, y: np.ndarray) -> float:
-        prediction = self.predict(x)
-        prediction_class = (prediction >= 0.5).astype(int)
-        accuracy = np.mean(prediction_class == y)
+        accuracy = np.mean((self.predict(x) >= 0.5).astype(int) == y)
         return float(accuracy)
 
     def grad(self, x, y) -> tuple[np.ndarray, np.ndarray]:
         prediction = self.predict(x)
-        bias_grad = np.sum(y - prediction)
-        weight_grad = np.sum(x.T * (y - prediction), axis=1)
+        bias_grad = np.mean(prediction - y)
+        weight_grad = np.mean(x.T * (prediction - y), axis=1)
         return weight_grad, bias_grad
 
 
