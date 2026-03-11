@@ -79,6 +79,8 @@ class Exercise:
         return LogisticRegression(num_features, rng=rng or np.random.default_rng())
 
     @staticmethod
-    def fit(
-        model: LinearRegression | LogisticRegression, x: np.ndarray, y: np.ndarray, lr: float, n_iter: int
-    ) -> None: ...
+    def fit(model: LinearRegression | LogisticRegression, x: np.ndarray, y: np.ndarray, lr: float, n_iter: int) -> None:
+        for _ in range(n_iter):
+            grad_w, grad_b = model.grad(x, y)
+            model.weights -= lr * grad_w
+            model.bias -= lr * grad_b
