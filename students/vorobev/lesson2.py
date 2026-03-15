@@ -7,21 +7,20 @@ class LinearRegression:
 
     def __init__(self, num_features: int, rng: np.random.Generator) -> None:
         self.weights = rng.random(num_features)
-        self.bias = np.array(0.0)  # смещение
+        self.bias = np.array(0.0)
 
     def predict(self, x: np.ndarray) -> np.ndarray:
-        return np.dot(x, self.weights) + self.bias
+        return x @ self.weights + self.bias
 
     def loss(self, x: np.ndarray, y: np.ndarray) -> float:
-        return np.mean(np.square(y - self.predict(x)))
+        return np.sum(np.square(y - self.predict(x))) / (y.size)
 
     def metric(self, x: np.ndarray, y: np.ndarray) -> float:
-        return 1 - self.loss(x, y) / np.var(y)  # / дисперсию
+        return 1 - (np.sum(np.square(y - self.predict(x))) / np.sum(np.square(y - np.sum(y) / y.size)))
 
     def grad(self, x, y) -> tuple[np.ndarray, np.ndarray]:
-        p = self.predict(x)
-        dw = (-2 / len(x)) * np.dot(x.T, (y - p))
-        db = -2 * np.mean(y - p)
+        db = -2 * np.sum(y - self.predict(x)) / y.size
+        dw = -2 * x.T @ (y - self.predict(x)) / y.size
         return dw, db
 
 
@@ -34,27 +33,25 @@ class LogisticRegression:
         self.bias = np.array(0.0)
 
     def predict(self, x: np.ndarray) -> np.ndarray:
-        z = np.dot(x, self.weights) + self.bias
-        return 1 / (1 + np.exp(-z))
+        return 1 / (1 + np.exp(-(self.bias + x @ self.weights)))
 
     def loss(self, x: np.ndarray, y: np.ndarray) -> float:
-        p = self.predict(x)
-        return -np.mean(y * np.log(p) + (1 - y) * np.log(1 - p))
+        return -np.sum(y * np.log(self.predict(x)) + (1 - y) * np.log(1 - self.predict(x))) / y.size
 
     def metric(self, x: np.ndarray, y: np.ndarray) -> float:
-        return np.mean((self.predict(x) >= 0.5) == y)
+        doorstep = 0.5
+        return np.sum((self.predict(x) >= doorstep).astype(int) == y) / y.size
 
     def grad(self, x, y) -> tuple[np.ndarray, np.ndarray]:
-        p = self.predict(x)
-        dw = 1 / len(x) * np.dot(x.T, (p - y))
-        db = np.mean(p - y)
+        db = np.sum(self.predict(x) - y) / y.size
+        dw = (x.T @ (self.predict(x) - y)) / len(y)
         return dw, db
 
 
 class Exercise:
     @staticmethod
     def get_student() -> str:
-        return "Кузьмин Александр Андреевич, ПМ-35"
+        return "Воробьев Никита Александрович, ПМ-31"
 
     @staticmethod
     def get_topic() -> str:
