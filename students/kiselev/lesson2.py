@@ -124,22 +124,21 @@ class Exercise:
         n_epoch: int,
         batch_size: int | None = None,
     ) -> None:
-            m = x.shape[0]
-            if batch_size is None or batch_size <= 0 or batch_size > m:
-                batch_size = m 
+        m = x.shape[0]
+        if batch_size is None or batch_size <= 0 or batch_size > m:
+            batch_size = m
 
-            for _ in range(n_epoch):
-                for start in range(0, m, batch_size):
-                    end = start + batch_size
-                    x_batch = x[start:end]
-                    y_batch = y[start:end]
+        for _ in range(n_epoch):
+            for start in range(0, m, batch_size):
+                end = start + batch_size
+                x_batch = x[start:end]
+                y_batch = y[start:end]
 
-                    grad_w, grad_b = model.grad(x_batch, y_batch)
-                    model.weights -= lr * grad_w
-                    model.bias -= lr * grad_b
+                grad_w, grad_b = model.grad(x_batch, y_batch)
+                model.weights -= lr * grad_w
+                model.bias -= lr * grad_b
 
     @staticmethod
     def get_iris_hyperparameters() -> dict[str, int | float]:
         # Для 25 эпох, по метрике AUROC
         return {"lr": 0.005, "batch_size": 4}
-
