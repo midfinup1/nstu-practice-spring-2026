@@ -152,6 +152,7 @@ class Model:
             grads.extend(layer.grad)
         return grads
 
+
 _EPS = 1e-9
 
 
@@ -177,9 +178,7 @@ class BCELoss:
 
     def forward(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
         self._x, self._y = x, y
-        return -np.mean(
-            y * np.log(x + _EPS) + (1 - y) * np.log(1 - x + _EPS)
-        )
+        return -np.mean(y * np.log(x + _EPS) + (1 - y) * np.log(1 - x + _EPS))
 
     def backward(self) -> np.ndarray:
         if self._x is None:
@@ -225,6 +224,7 @@ class CrossEntropyLoss:
         grad = np.exp(self._log_probs)
         grad[np.arange(n), self._y] -= 1.0
         return grad / n
+
 
 class Exercise:
     @staticmethod
